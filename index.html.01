@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Family Meal Planner</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#fff8ef;--card:#ffffff;--ink:#3a2f2a;--mute:#8d7f74;--line:#f1e4d4;--acc:#ff7a59;--acc-ink:#fff;--mint:#d8f3e4;--butter:#fff0b8;--sky:#dcecff;--on:#ffe3d9}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#1e1a17;--card:#2a2420;--ink:#f6ede3;--mute:#b0a396;--line:#3d352f;--acc:#ff8f70;--acc-ink:#1e1a17;--mint:#23382d;--butter:#3d3719;--sky:#222f40;--on:#4a2e25}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#1e1a17;--card:#2a2420;--ink:#f6ede3;--mute:#b0a396;--line:#3d352f;--acc:#ff8f70;--acc-ink:#1e1a17;--mint:#23382d;--butter:#3d3719;--sky:#222f40;--on:#4a2e25}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-rounded,"Nunito","Quicksand",system-ui,sans-serif;line-height:1.4}
+main{max-width:560px;margin:0 auto;padding:18px 16px 70px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+#mascot{font-size:46px;cursor:pointer;display:inline-block;user-select:none;transition:transform .2s}
+#mascot.hop{animation:hop .5s}
+@keyframes hop{0%,100%{transform:translateY(0)}40%{transform:translateY(-14px) rotate(-8deg)}70%{transform:translateY(0) rotate(6deg)}}
+h1{font-size:24px;margin:0;line-height:1.1}
+.sub{margin:2px 0 0;color:var(--mute);font-size:14px}
+#stars{margin-left:auto;background:var(--butter);padding:6px 12px;border-radius:99px;font-weight:700;font-size:15px;white-space:nowrap}
+.step{background:var(--card);border-radius:22px;padding:16px;margin-bottom:14px;border:2px solid var(--line)}
+.step h2{font-size:16px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--acc);color:var(--acc-ink);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tile{border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:16px;padding:10px 2px 8px;font:600 12px inherit;font-family:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:transform .15s}
+.tile b{font-size:28px;line-height:1.1;font-weight:400}
+.tile.on{background:var(--on);border-color:var(--acc);transform:scale(1.05)}
+input{width:100%;font:16px inherit;font-family:inherit;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:14px;padding:10px 12px}
+.row{display:flex;gap:8px;margin-top:10px}
+.pill{font:600 13px inherit;font-family:inherit;padding:7px 12px;border-radius:99px;border:2px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.pill.on{background:var(--acc);border-color:var(--acc);color:var(--acc-ink)}
+.mem{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:2px dashed var(--line)}
+.mem:first-child{border-top:0;padding-top:0}
+.av{font-size:34px;background:var(--sky);border-radius:50%;width:52px;height:52px;border:0;cursor:pointer;flex:none}
+.mb{flex:1}.mb b{font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.x{background:none;border:0;color:var(--mute);font-size:22px;cursor:pointer}
+.go{width:100%;padding:16px;border:0;border-radius:20px;background:var(--acc);color:var(--acc-ink);font:800 18px inherit;font-family:inherit;cursor:pointer;box-shadow:0 5px 0 rgba(0,0,0,.15);transition:transform .1s,box-shadow .1s}
+.go:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.15)}
+.go:disabled{opacity:.7}
+.day{font-weight:800;font-size:18px;margin:22px 4px 10px}
+.meal{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:14px;margin-bottom:12px;animation:pop .4s both}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.97)}}
+.mt{display:flex;gap:12px;align-items:center;cursor:pointer}
+.em{font-size:40px;width:64px;height:64px;display:grid;place-items:center;border-radius:18px;flex:none}
+.meal:nth-child(3n+1) .em{background:var(--mint)}.meal:nth-child(3n+2) .em{background:var(--butter)}.meal:nth-child(3n) .em{background:var(--sky)}
+.tag{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--acc)}
+.mt h3{margin:0;font-size:17px}
+.why{margin:2px 0 0;font-size:13px;color:var(--mute)}
+.more{display:none;margin-top:12px;font-size:14px}
+.meal.open .more{display:block}
+.more ol{margin:0 0 10px;padding-left:22px}.more li{margin-bottom:4px}
+.miss{background:var(--butter);border-radius:12px;padding:7px 10px;font-size:13px;margin-bottom:10px}
+.done{width:100%;padding:11px;border:2px solid var(--acc);background:transparent;color:var(--acc);font:800 15px inherit;font-family:inherit;border-radius:14px;cursor:pointer}
+.done.ok{background:var(--acc);color:var(--acc-ink)}
+.tip{background:var(--mint);border-radius:18px;padding:12px 14px;font-size:14px;margin-bottom:6px}
+.g{display:flex;gap:12px;align-items:center;padding:11px 4px;border-top:2px dashed var(--line);cursor:pointer;font-size:16px}
+.g:first-of-type{border-top:0}
+.g input{width:24px;height:24px;padding:0;accent-color:var(--acc);flex:none}
+.g input:checked+span{text-decoration:line-through;color:var(--mute)}
+.msg{text-align:center;padding:26px 10px;color:var(--mute);font-weight:600}
+.msg b{display:block;font-size:44px;animation:hop 1s infinite}
+.err{color:#d6452f}
+.fl{position:fixed;font-size:26px;pointer-events:none;z-index:50;animation:fl 1.1s ease-out forwards}
+@keyframes fl{to{transform:translateY(-140px) rotate(40deg);opacity:0}}
+body{background:linear-gradient(160deg,#ffd9e6 0%,#fff1c2 38%,#cdf3ff 70%,#e6d9ff 100%) fixed;min-height:100vh}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body{background:linear-gradient(160deg,#3a1d33 0%,#33290f 38%,#12303c 70%,#2b1f45 100%) fixed}}
+:root[data-theme="dark"] body{background:linear-gradient(160deg,#3a1d33 0%,#33290f 38%,#12303c 70%,#2b1f45 100%) fixed}
+h1{background:linear-gradient(90deg,#ff5e7e,#ff9a3c,#2fbf71,#27a8f0,#a46bff);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:28px;font-weight:900}
+#stars{background:linear-gradient(135deg,#ffd84d,#ff9a3c);color:#4a2b00;box-shadow:0 3px 0 rgba(0,0,0,.12)}
+.step{--c:#2fbf71;background:color-mix(in srgb,var(--c) 14%,var(--card));border-color:color-mix(in srgb,var(--c) 55%,transparent)}
+section.step:nth-of-type(1){--c:#ff7a59}
+section.step:nth-of-type(2){--c:#a46bff}
+section.step:nth-of-type(3){--c:#27a8f0}
+.step .n{background:var(--c);color:#fff}
+.tile:nth-child(6n+1){--c:#ff6b6b}.tile:nth-child(6n+2){--c:#ff9f43}.tile:nth-child(6n+3){--c:#f2c200}.tile:nth-child(6n+4){--c:#2fbf71}.tile:nth-child(6n+5){--c:#27a8f0}.tile:nth-child(6n){--c:#a46bff}
+.tile{background:color-mix(in srgb,var(--c) 22%,var(--card));border-color:color-mix(in srgb,var(--c) 50%,transparent)}
+.tile.on{background:var(--c);border-color:var(--c);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.15)}
+.pill.on{background:linear-gradient(135deg,#ff7a59,#ff4f8b);border-color:transparent;color:#fff}
+.av{background:linear-gradient(135deg,#ffd1e8,#cfe3ff)}
+.mem:nth-child(3n+2) .av{background:linear-gradient(135deg,#d8f3e4,#fff0b8)}
+.mem:nth-child(3n) .av{background:linear-gradient(135deg,#e6d9ff,#ffd9c9)}
+.go{background:linear-gradient(90deg,#ff5e7e,#ff9a3c,#f2c200);color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.15);box-shadow:0 5px 0 rgba(160,60,40,.35)}
+.meal{--c:#ff7a59;border-color:color-mix(in srgb,var(--c) 55%,transparent);background:color-mix(in srgb,var(--c) 10%,var(--card))}
+.meal:nth-child(4n+3){--c:#a46bff}.meal:nth-child(4n+4){--c:#27a8f0}.meal:nth-child(4n+1){--c:#2fbf71}
+.meal .em{background:color-mix(in srgb,var(--c) 28%,var(--card))!important}
+.tag{color:var(--c)}
+.done{border-color:var(--c);color:var(--c)}
+.done.ok{background:var(--c);color:#fff}
+.tip{background:linear-gradient(135deg,var(--mint),var(--sky))}
+.day{display:inline-block;background:linear-gradient(90deg,#ff5e7e,#ff9a3c);color:#fff;padding:5px 16px;border-radius:99px;font-size:16px}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <span id="mascot" role="img" aria-label="chef">🧑‍🍳</span>
+  <div><h1>Yummy Planner</h1><p class="sub">What’s for dinner? Let’s find out!</p></div>
+  <div id="stars">⭐ 0</div>
+</header>
+
+<section class="step"><h2><span class="n">1</span>Tap what’s in your kitchen</h2>
+  <div class="grid" id="tiles"></div>
+  <div class="row"><input id="own" placeholder="Something else? Type it here"><button class="pill" id="addI">Add</button></div>
+</section>
+
+<section class="step"><h2><span class="n">2</span>Who’s eating?</h2>
+  <div id="members"></div>
+  <div class="row"><input id="nm" placeholder="Add a family member"><button class="pill" id="addM">Add</button></div>
+</section>
+
+<section class="step"><h2><span class="n">3</span>How many days?</h2>
+  <div class="chips" id="days"></div>
+  <div class="row"><input id="bud" placeholder="Any wish? e.g. pasta, low budget (optional)"></div>
+</section>
+
+<button class="go" id="go">✨ Plan our meals!</button>
+<div id="out"></div>
+</main>
+
+<script>
+const BASE=[["🍚","Rice"],["🥚","Eggs"],["🥛","Milk"],["🍅","Tomato"],["🥔","Potato"],["🧅","Onion"],["🥬","Spinach"],["🧀","Paneer"],["🍞","Bread"],["🥕","Carrot"],["🍌","Banana"],["🫘","Dal"]];
+const NEEDS=["Diabetes","High BP","Nut allergy","No dairy","Veg","Low salt"];
+const AV=["🧒","👧","👦","👵","👴","👩","👨"];
+let tiles=BASE.map(([e,n])=>({e,n,on:false})),members=[{name:"Me",av:0,needs:[]}],days=1,sample=null,stars=0;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function fly(x,y,list){for(let i=0;i<6;i++){const s=document.createElement("span");s.className="fl";s.textContent=list[i%list.length];s.style.left=(x+(Math.random()*80-40))+"px";s.style.top=y+"px";s.style.animationDelay=(i*60)+"ms";document.body.appendChild(s);setTimeout(()=>s.remove(),1400);}}
+function hop(){const m=$("mascot");m.classList.remove("hop");void m.offsetWidth;m.classList.add("hop");}
+$("mascot").onclick=hop;
+function addStar(e){stars++;$("stars").textContent="⭐ "+stars;const r=e.target.getBoundingClientRect();fly(r.left+r.width/2,r.top,["⭐","✨","🎉"]);hop();}
+
+function drawTiles(){$("tiles").innerHTML=tiles.map((t,i)=>`<button class="tile ${t.on?"on":""}" data-t="${i}"><b>${t.e}</b>${esc(t.n)}</button>`).join("");}
+function drawMembers(){$("members").innerHTML=members.map((m,i)=>`<div class="mem"><button class="av" data-av="${i}" aria-label="Change avatar">${AV[m.av]}</button><div class="mb"><b>${esc(m.name)}</b><div class="chips">${NEEDS.map(n=>`<button class="pill ${m.needs.includes(n)?"on":""}" data-i="${i}" data-n="${n}">${n}</button>`).join("")}</div></div>${members.length>1?`<button class="x" data-rm="${i}" aria-label="Remove">×</button>`:""}</div>`).join("");}
+function drawDays(){$("days").innerHTML=[1,3,7].map(d=>`<button class="pill ${d===days?"on":""}" data-d="${d}">${d===1?"Today":d+" days"}</button>`).join("");}
+
+document.addEventListener("click",e=>{
+  const t=e.target.closest("button");if(!t)return;const d=t.dataset;
+  if(d.t!==undefined){tiles[+d.t].on=!tiles[+d.t].on;drawTiles();}
+  else if(d.n){const m=members[+d.i];m.needs=m.needs.includes(d.n)?m.needs.filter(x=>x!==d.n):[...m.needs,d.n];drawMembers();}
+  else if(d.av!==undefined){const m=members[+d.av];m.av=(m.av+1)%AV.length;drawMembers();}
+  else if(d.rm){members.splice(+d.rm,1);drawMembers();}
+  else if(d.d){days=+d.d;drawDays();}
+});
+$("addI").onclick=()=>{const v=$("own").value.trim();if(!v)return;tiles.push({e:"🍽️",n:v,on:true});$("own").value="";drawTiles();};
+$("addM").onclick=()=>{const v=$("nm").value.trim();if(!v)return;members.push({name:v,av:members.length%AV.length,needs:[]});$("nm").value="";drawMembers();};
+
+function render(r){
+  let h=r.tip?`<div class="tip" style="margin-top:20px">💡 ${esc(r.tip)}</div>`:"";
+  (r.days||[]).forEach(d=>{
+    h+=`<div class="day">${esc(d.day)}</div>`+(d.meals||[]).map((m,i)=>`<div class="meal" style="animation-delay:${i*90}ms"><div class="mt"><div class="em">${esc(m.emoji||"🍽️")}</div><div><div class="tag">${esc(m.type)}</div><h3>${esc(m.name)}</h3><p class="why">${esc(m.why)}</p></div></div><div class="more">${(m.steps&&m.steps.length)?`<ol>${m.steps.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>`:""}${(m.missing&&m.missing.length)?`<div class="miss">🛒 Need: ${m.missing.map(esc).join(", ")}</div>`:""}<button class="done">I cooked this! ⭐</button></div></div>`).join("");
+  });
+  if(r.grocery&&r.grocery.length)h+=`<div class="day">🛒 Shopping list</div><div class="step">${r.grocery.map(g=>`<label class="g"><input type="checkbox"><span>${esc(g)}</span></label>`).join("")}</div>`;
+  $("out").innerHTML=h;
+  $("out").scrollIntoView({behavior:"smooth"});
+}
+$("out").addEventListener("click",e=>{
+  const b=e.target.closest(".done");
+  if(b){if(!b.classList.contains("ok")){b.classList.add("ok");b.textContent="Yum! Done ✔";addStar(e);}return;}
+  const mt=e.target.closest(".mt");if(mt)mt.parentElement.classList.toggle("open");
+  const c=e.target.closest(".g input");if(c&&c.checked)fly(e.clientX,e.clientY,["✨","🥕","🍎"]);
+});
+
+const LOAD=["Chopping ideas…","Stirring the pot…","Asking the chef…","Tasting the sauce…"];
+$("go").onclick=async()=>{
+  const items=tiles.filter(t=>t.on).map(t=>t.n),o=$("out"),b=$("go");
+  hop();
+  if(!items.length){o.innerHTML='<div class="msg err"><b>🥺</b>Tap a few ingredients first!</div>';return;}
+  b.disabled=true;let k=0;const tick=()=>{o.innerHTML=`<div class="msg"><b>🍳</b>${LOAD[k++%LOAD.length]}</div>`};tick();const iv=setInterval(tick,1800);
+  const fam=members.map(m=>`${m.name}${m.needs.length?" ("+m.needs.join(", ")+")":""}`).join("; ");
+  const prompt=`You are a friendly family nutrition and meal planning assistant. Plan ${days===1?"1 day":days+" days"} of meals (breakfast, lunch, dinner) for this family. Respect every dietary need strictly (low sugar for diabetes, no nuts for nut allergy, low salt for high BP, etc.). Prefer ingredients they already have. Keep dishes kid-friendly and fun, with simple wording.
+Ingredients at home: ${items.join(", ")}
+Family: ${fam}
+Wishes: ${$("bud").value.trim()||"none"}
+Return ONLY JSON in exactly this shape:
+{"tip":"one short fun health tip","days":[{"day":"Day 1","meals":[{"type":"Breakfast","emoji":"one food emoji","name":"dish name","why":"one short line on why it suits this family","steps":["step 1","step 2","step 3"],"missing":["ingredient not at home"]}]}],"grocery":["item with rough quantity"]}
+Steps: 3-4 short lines. Grocery list combines all missing items, no duplicates.`;
+  try{
+    const res=await fetch("/.netlify/functions/plan",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt})});
+    if(!res.ok)throw new Error("api");
+    const {text}=await res.json();
+    render(JSON.parse(text.replace(/```json|```/g,"").trim()));
+  }
+  catch(e){o.innerHTML='<div class="msg err"><b>🙈</b>Oops, the pot spilled'+(e&&e.code==="rate_limited"?" (too many tries, wait a moment)":"")+'. Try again!</div>';}
+  clearInterval(iv);b.disabled=false;
+};
+drawTiles();drawMembers();drawDays();
+</script>
+</body>
+</html>
